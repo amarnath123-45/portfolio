@@ -3,6 +3,9 @@ import { Mail, Phone, ExternalLink, ChevronRight } from 'lucide-react';
 import { FaLinkedin } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { resumeData } from './data/resume.js';
+import Cursor from './Cursor';
+import ParticleWave from './ParticleWave';
+import CyberAvatar from './CyberAvatar';
 
 // Animation Variations
 const typingContainer = {
@@ -46,7 +49,7 @@ const staggerContainer = {
 };
 
 const Header = () => (
-  <motion.header 
+  <motion.header
     className="header"
     initial={{ y: -50, opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
@@ -81,9 +84,9 @@ const Hero = () => {
               <motion.span key={index} variants={typingChar}>{char}</motion.span>
             ))}
           </motion.div>
-          <motion.h1 
-            variants={fadeInUp} 
-            className="hero-title glitch" 
+          <motion.h1
+            variants={fadeInUp}
+            className="hero-title glitch"
             data-text={name}
           >
             {name}
@@ -104,14 +107,14 @@ const Hero = () => {
 const Skills = () => (
   <section id="skills" className="section">
     <div className="container">
-      <motion.h2 
+      <motion.h2
         initial={{ opacity: 0, x: -50 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
       >
         Technical Skills
       </motion.h2>
-      <motion.div 
+      <motion.div
         className="skills-container"
         variants={staggerContainer}
         initial="hidden"
@@ -136,7 +139,7 @@ const Skills = () => (
 const Experience = () => (
   <section id="experience" className="section">
     <div className="container">
-      <motion.h2 
+      <motion.h2
         initial={{ opacity: 0, x: -50 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
@@ -145,8 +148,8 @@ const Experience = () => (
       </motion.h2>
       <div className="timeline">
         {resumeData.experience.map((exp, index) => (
-          <motion.div 
-            key={index} 
+          <motion.div
+            key={index}
             className="timeline-item"
             initial="hidden"
             whileInView="visible"
@@ -178,7 +181,7 @@ const Projects = () => (
       >
         Featured Projects
       </motion.h2>
-      <motion.div 
+      <motion.div
         className="projects-grid"
         variants={staggerContainer}
         initial="hidden"
@@ -186,9 +189,9 @@ const Projects = () => (
         viewport={{ once: true, margin: "-100px" }}
       >
         {resumeData.projects.map((project, index) => (
-          <motion.div 
-            key={index} 
-            variants={flipIn} 
+          <motion.div
+            key={index}
+            variants={flipIn}
             className="cyber-panel project-card"
             whileHover={{ scale: 1.05, rotate: [0, -1, 1, -1, 0], transition: { duration: 0.2 } }}
           >
@@ -218,8 +221,8 @@ const Education = () => (
       </motion.h2>
       <div className="timeline">
         {resumeData.education.map((edu, index) => (
-          <motion.div 
-            key={index} 
+          <motion.div
+            key={index}
             className="timeline-item"
             initial="hidden"
             whileInView="visible"
@@ -238,7 +241,7 @@ const Education = () => (
 );
 
 const Footer = () => (
-  <motion.footer 
+  <motion.footer
     className="footer"
     initial={{ opacity: 0 }}
     whileInView={{ opacity: 1 }}
@@ -254,6 +257,8 @@ const Footer = () => (
 function App() {
   return (
     <div className="app-container">
+      <ParticleWave />
+      <Cursor />
       <Header />
       <main className="main-content">
         <Hero />
@@ -263,6 +268,7 @@ function App() {
         <Education />
       </main>
       <Footer />
+      <CyberAvatar />
     </div>
   );
 }

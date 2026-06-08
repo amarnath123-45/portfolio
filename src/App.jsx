@@ -340,7 +340,7 @@ const Contact = () => {
               animate={{ scale: 1, opacity: 1 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
             >
-              <div style={{ color: 'var(--neon-cyan)', fontSize: '2rem', marginBottom: '1rem' }}>UPLINK_SUCCESSFUL</div>
+              <div style={{ color: 'var(--neon-cyan)', fontSize: '2rem', marginBottom: '1rem' }}>SENT SUCCESSFULLY</div>
               <p>Your message has been received by the system.</p>
               <button
                 onClick={() => setStatus('idle')}

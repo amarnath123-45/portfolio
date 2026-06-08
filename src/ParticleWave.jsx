@@ -10,7 +10,7 @@ const ParticleWave = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     let animationFrameId;
-    
+
     let width = window.innerWidth;
     let height = window.innerHeight;
 
@@ -34,32 +34,32 @@ const ParticleWave = () => {
       // Normalize mouse between -1 and 1
       mouse.current.x = (e.clientX / width) * 2 - 1;
       mouse.current.y = (e.clientY / height) * 2 - 1;
-      
+
       // Check if hovering over interactive elements during mouse move
-      const isInteractive = 
-        e.target.tagName?.toLowerCase() === 'a' || 
-        e.target.closest('a') || 
+      const isInteractive =
+        e.target.tagName?.toLowerCase() === 'a' ||
+        e.target.closest('a') ||
         e.target.tagName?.toLowerCase() === 'button' ||
         e.target.closest('button') ||
         e.target.classList?.contains('project-card');
-        
+
       isHoveringRef.current = !!isInteractive;
     };
-    
+
     window.addEventListener('mousemove', handleMouseMove);
 
     // Particle Grid Settings
     const SEPARATION = 100; // Distance between dots
     const AMOUNTX = 50;   // Number of dots in X
     const AMOUNTY = 50;   // Number of dots in Z
-    
+
     let count = 0;
 
     const render = () => {
       // Clear background with site's dark primary color
-      ctx.fillStyle = '#050505'; 
+      ctx.fillStyle = '#050505';
       ctx.fillRect(0, 0, width, height);
-      
+
       // Keep the camera completely static
       const camX = 0;
       const camY = 200;
@@ -69,7 +69,7 @@ const ParticleWave = () => {
       const angleX = -Math.PI / 6; // Look down a bit steeper
       const cosX = Math.cos(angleX);
       const sinX = Math.sin(angleX);
-      
+
       const points2d = [];
 
       // Mouse position in actual pixels
@@ -79,14 +79,14 @@ const ParticleWave = () => {
       for (let ix = 0; ix < AMOUNTX; ix++) {
         points2d[ix] = [];
         for (let iy = 0; iy < AMOUNTY; iy++) {
-          
+
           // Base 3D coordinates
           let px = ix * SEPARATION - ((AMOUNTX * SEPARATION) / 2);
           let pz = iy * SEPARATION - ((AMOUNTY * SEPARATION) / 2);
-          
+
           // Generate wave height using combinations of sine waves
-          let py = Math.sin((ix + count) * 0.3) * 80 + 
-                   Math.sin((iy + count) * 0.4) * 80;
+          let py = Math.sin((ix + count) * 0.3) * 80 +
+            Math.sin((iy + count) * 0.4) * 80;
 
           // Camera offset translation
           let vx = px - camX;
@@ -103,13 +103,13 @@ const ParticleWave = () => {
             points2d[ix][iy] = null;
             continue;
           }
-          
+
           // Perspective Projection
           const fov = 700;
           const scale = fov / (fov - finalZ);
-          
+
           let x2d = (finalX * scale) + (width / 2);
-          let y2d = (finalY * scale) + (height / 2) + 250; 
+          let y2d = (finalY * scale) + (height / 2) + 250;
 
           // Local Scatter Effect on Hover
           const dx = x2d - mousePxX;
@@ -122,15 +122,15 @@ const ParticleWave = () => {
           if (distSq < hoverRadiusSq) {
             const dist = Math.sqrt(distSq);
             const force = Math.pow((hoverRadius - dist) / hoverRadius, 1.5); // 0 to 1 curve
-            
+
             // Push outwards radially
             x2d += (dx / dist) * force * 70;
             y2d += (dy / dist) * force * 70;
-            
+
             // Add chaotic jitter
             x2d += Math.sin(count * 15 + ix * 2) * force * 20;
             y2d += Math.cos(count * 15 + iy * 2) * force * 20;
-            
+
             scatterGlow = 1 + force * 1.2; // Make scattered particles slightly brighter
           }
 
@@ -144,12 +144,12 @@ const ParticleWave = () => {
       }
 
       // PERFORMANCE OPTIMIZATION: Consolidate rendering to minimize draw calls
-      
+
       // 1. Draw horizontal connecting ribbons in ONE path
       ctx.beginPath();
       for (let ix = 0; ix < AMOUNTX; ix++) {
         let started = false;
-        
+
         for (let iy = 0; iy < AMOUNTY; iy++) {
           const pt = points2d[ix][iy];
           if (pt && pt.opacity > 0.05 && pt.x > 0 && pt.x < width && pt.y > 0 && pt.y < height) {
@@ -175,7 +175,7 @@ const ParticleWave = () => {
           const pt = points2d[ix][iy];
           if (pt && pt.opacity > 0.05 && pt.x > 0 && pt.x < width && pt.y > 0 && pt.y < height) {
             const r = Math.max(1, 4 * pt.scale); // Size of the cross
-            
+
             // Draw a "+" sign
             ctx.moveTo(pt.x - r, pt.y);
             ctx.lineTo(pt.x + r, pt.y);
@@ -187,7 +187,7 @@ const ParticleWave = () => {
       ctx.strokeStyle = `rgba(0, 243, 255, 0.3)`; // Uniform opacity for massive performance gain
       ctx.lineWidth = 1;
       ctx.stroke();
-      
+
       // 3. Draw highlighted points in ONE path
       ctx.beginPath();
       for (let ix = 0; ix < AMOUNTX; ix++) {
@@ -203,7 +203,7 @@ const ParticleWave = () => {
       }
       ctx.fillStyle = `rgba(255, 0, 255, 0.8)`; // Neon pink highlight
       ctx.fill();
-      
+
       count += 0.035; // Wave animation speed
       animationFrameId = requestAnimationFrame(render);
     };

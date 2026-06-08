@@ -1,5 +1,5 @@
-import React from 'react';
-import { Mail, Phone, ExternalLink, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, ExternalLink, ChevronRight, Send, User, MessageSquare } from 'lucide-react';
 import { FaLinkedin } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { resumeData } from './data/resume.js';
@@ -64,6 +64,7 @@ const Header = () => (
         <a href="#skills">Skills</a>
         <a href="#experience">Experience</a>
         <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
       </nav>
     </div>
   </motion.header>
@@ -240,6 +241,196 @@ const Education = () => (
   </section>
 );
 
+const Contact = () => {
+  const { email, phone, linkedin } = resumeData.personalInfo;
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [status, setStatus] = useState('idle'); // idle, sending, success, error
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('sending');
+
+    try {
+      // connecting to the api endpoint specified
+      const response = await fetch('api/contact/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setStatus('idle'), 5000);
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      console.error("Transmission failed:", err);
+      setStatus('error');
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  return (
+    <section id="contact" className="section">
+      <div className="container">
+        <motion.h2
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+        >
+          Contact_System
+        </motion.h2>
+
+        <div className="contact-wrapper">
+          <motion.div
+            className="contact-info"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <motion.div variants={fadeInUp} className="contact-item">
+              <div className="contact-icon">
+                <Mail size={24} />
+              </div>
+              <div className="contact-details">
+                <label>Email_Link</label>
+                <a href={`mailto:${email}`}>{email}</a>
+              </div>
+            </motion.div>
+
+            <motion.div variants={fadeInUp} className="contact-item">
+              <div className="contact-icon">
+                <Phone size={24} />
+              </div>
+              <div className="contact-details">
+                <label>Comm_Line</label>
+                <a href={`tel:${phone}`}>{phone}</a>
+              </div>
+            </motion.div>
+
+            <motion.div variants={fadeInUp} className="contact-item">
+              <div className="contact-icon">
+                <FaLinkedin size={24} />
+              </div>
+              <div className="contact-details">
+                <label>Network_Node</label>
+                <a href={linkedin} target="_blank" rel="noopener noreferrer">LinkedIn Profile</a>
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {status === 'success' ? (
+            <motion.div
+              className="contact-form cyber-panel"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
+            >
+              <div style={{ color: 'var(--neon-cyan)', fontSize: '2rem', marginBottom: '1rem' }}>UPLINK_SUCCESSFUL</div>
+              <p>Your message has been received by the system.</p>
+              <button
+                onClick={() => setStatus('idle')}
+                className="submit-btn"
+                style={{ width: 'auto', marginTop: '1rem' }}
+              >
+                SEND ANOTHER
+              </button>
+            </motion.div>
+          ) : (
+            <motion.form
+              className="contact-form"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              onSubmit={handleSubmit}
+            >
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <User className="input-icon" size={18} />
+                  <input
+                    name="name"
+                    type="text"
+                    placeholder="USER_NAME"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <Mail className="input-icon" size={18} />
+                  <input
+                    name="email"
+                    type="email"
+                    placeholder="USER_EMAIL"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <ChevronRight className="input-icon" size={18} />
+                  <input
+                    name="subject"
+                    type="text"
+                    placeholder="SUBJECT_HEADER"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="input-wrapper">
+                  <MessageSquare className="input-icon" size={18} />
+                  <textarea
+                    name="message"
+                    placeholder="TRANSMIT_MESSAGE"
+                    rows="4"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                  ></textarea>
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={status === 'sending'}
+              >
+                <span>{status === 'sending' ? 'TRANSMITTING...' : 'SEND MESSAGE'}</span>
+                <Send size={18} />
+              </button>
+              {status === 'error' && (
+                <div style={{ color: 'var(--neon-pink)', marginTop: '1rem', textAlign: 'center', fontSize: '0.8rem' }}>
+                  SYSTEM_ERROR: UPLINK_FAILED. PLEASE_TRY_LATER.
+                </div>
+              )}
+            </motion.form>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const Footer = () => (
   <motion.footer
     className="footer"
@@ -266,6 +457,7 @@ function App() {
         <Experience />
         <Projects />
         <Education />
+        <Contact />
       </main>
       <Footer />
       <CyberAvatar />
